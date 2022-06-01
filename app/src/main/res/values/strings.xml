@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Weather</string>
     <string name="current_weather">Погода</string>
+    <string name="temperature">13°C</string>
 </resources>
