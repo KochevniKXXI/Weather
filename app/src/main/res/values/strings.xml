@@ -1,5 +1,15 @@
 <resources>
-    <string name="app_name">Weather</string>
-    <string name="current_weather">Погода</string>
-    <string name="temperature">13°C</string>
+    <string name="app_name">Погода</string>
+    <string name="temperature">+21°C</string>
+    <string name="input_city">Введите ваш город…</string>
+    <string name="check_the_weather">Узнать погоду</string>
+    <string name="text_weather">ЯСНО</string>
+    <string name="wind">Ветер: С-В 10 м/с</string>
+    <string name="humidity">Влажность: 40%</string>
+    <string name="pressure">Атмосферное давление: 713 мм рт. ст.</string>
+    <string name="water">Температура воды: +13°C</string>
+    <string name="check_wind">Ветер</string>
+    <string name="check_humidity">Влажность</string>
+    <string name="check_pressure">Атмосферное давление</string>
+    <string name="check_water">Температура воды</string>
 </resources>
