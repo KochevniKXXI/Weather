@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather</string>
+    <string name="input_city">Enter your city…</string>
+    <string name="check_the_weather">Find out the weather</string>
+    <string name="text_weather">Clear</string>
+    <string name="wind">Wind: N-W 10 m/s</string>
+    <string name="humidity">Humidity: 40%</string>
+    <string name="pressure">Atmospheric pressure: 713 mmHg</string>
+    <string name="water">Water temperature: +13°C</string>
+    <string name="check_wind">Wind</string>
+    <string name="check_humidity">Humidity</string>
+    <string name="check_pressure">Atmospheric pressure</string>
+    <string name="check_water">Water temperature</string>
+</resources>

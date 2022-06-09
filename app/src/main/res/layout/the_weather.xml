@@ -13,14 +13,13 @@
             android:id="@+id/current_city"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="36sp"/>
+            style="@style/city" />
 
         <TextView
             android:id="@+id/temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textStyle="bold"
+            style="@style/temperature"
             android:text="@string/temperature" />
 
         <ImageView
@@ -33,7 +32,7 @@
             android:id="@+id/text_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            style="@style/temperature"
             android:text="@string/text_weather" />
 
         <TextView
