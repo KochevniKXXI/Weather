@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context=".FirstSettings">
+    android:orientation="vertical"
+    tools:context=".FirstSettingsFragment">
 
     <EditText
         android:id="@+id/edit_city"
@@ -51,6 +50,7 @@
         android:id="@+id/check_the_weather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/check_the_weather"
-        android:enabled="false" />
+        android:enabled="false"
+        android:text="@string/check_the_weather" />
+
 </LinearLayout>
