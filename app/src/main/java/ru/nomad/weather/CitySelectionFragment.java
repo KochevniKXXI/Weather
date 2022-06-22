@@ -21,6 +21,8 @@ import android.view.ViewGroup;
  */
 public class CitySelectionFragment extends Fragment {
 
+
+
     private Settings currentSettings;
     private boolean isLandscape;
 
@@ -35,7 +37,7 @@ public class CitySelectionFragment extends Fragment {
         if (savedInstanceState != null) {
             currentSettings = (Settings) savedInstanceState.getSerializable(SETTINGS);
         } else {
-            currentSettings = new Settings("", false, false, false, false);
+            currentSettings = new Settings("", true, true, true, true);
         }
     }
 
@@ -48,8 +50,8 @@ public class CitySelectionFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         listCity.setLayoutManager(layoutManager);
         ListCityAdapter.OnCardCityClickListener cardCityClickListener = (city, position) -> {
-            Settings newSettings = new Settings(city,false,false,false,false);
-            showWeather(newSettings);
+            currentSettings = new Settings(city, true, true, true, true);
+            showWeather(currentSettings);
         };
         ListCityAdapter adapter = new ListCityAdapter(getResources().getStringArray(R.array.cities), getResources().obtainTypedArray(R.array.panoramas), cardCityClickListener);
         listCity.setAdapter(adapter);
@@ -64,7 +66,7 @@ public class CitySelectionFragment extends Fragment {
         View weatherFrame = getActivity().findViewById(R.id.weather_forecast);
         // getActivity - получить контекст activity, где расположен фрагмент
         isLandscape = weatherFrame != null && weatherFrame.getVisibility() == View.VISIBLE;
-        // Если можно нарисовать рядом герб, то сделаем это
+        // Если можно отобразить рядом прогноз, то сделаем это
         if (isLandscape) {
             showWeather(currentSettings);
         }
@@ -73,18 +75,16 @@ public class CitySelectionFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Settings newSettings = new Settings(currentSettings.getCity(),false,false,false,false);
-        outState.putSerializable(SETTINGS, newSettings);
+        outState.putSerializable(SETTINGS, currentSettings);
     }
 
     public void showWeather(Settings settings) {
         if (isLandscape) {
-// Выделим текущий элемент списка
-// Проверим, что фрагмент с гербом существует в activity
+// Проверим, что фрагмент с прогнозом существует в activity
             WeatherFragment weather = (WeatherFragment) getFragmentManager().findFragmentById(R.id.weather_forecast);
-// если есть необходимость, то выведем герб
+// если есть необходимость, то выведем прогноз
             if (weather == null || !weather.getParcel().equals(settings)) {
-// Создаем новый фрагмент с текущей позицией для вывода герба
+// Создаем новый фрагмент с текущей позицией для вывода прогноза
                 weather = WeatherFragment.newInstance(settings);
 // Выполняем транзакцию по замене фрагмента
                 FragmentTransaction ft = getFragmentManager().beginTransaction();

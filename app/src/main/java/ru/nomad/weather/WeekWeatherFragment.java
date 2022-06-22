@@ -19,8 +19,6 @@ import android.view.ViewGroup;
  */
 public class WeekWeatherFragment extends Fragment {
 
-    private Settings settings;
-
     public WeekWeatherFragment() {
         // Required empty public constructor
     }
@@ -38,17 +36,6 @@ public class WeekWeatherFragment extends Fragment {
         args.putSerializable(SETTINGS, settings);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            settings = (Settings) savedInstanceState.getSerializable(SETTINGS);
-        } else {
-            settings = new Settings("", false, false, false, false);
-        }
     }
 
     @Override
