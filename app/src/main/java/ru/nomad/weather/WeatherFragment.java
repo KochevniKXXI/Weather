@@ -11,15 +11,15 @@ import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link TheWeatherFragment#newInstance} factory method to
+ * Use the {@link WeatherFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TheWeatherFragment extends Fragment {
+public class WeatherFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    public static final String PARCEL = "parcel";
+    public static final String SETTINGS = "settings";
 
-    public TheWeatherFragment() {
+    public WeatherFragment() {
         // Required empty public constructor
     }
 
@@ -27,20 +27,20 @@ public class TheWeatherFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param parcel Parameter 1.
-     * @return A new instance of fragment TheWeatherFragment.
+     * @param settings Parameter 1.
+     * @return A new instance of fragment WeatherFragment.
      */
-    public static TheWeatherFragment newInstance(Parcel parcel) {
-        TheWeatherFragment fragment = new TheWeatherFragment();
+    public static WeatherFragment newInstance(Settings settings) {
+        WeatherFragment fragment = new WeatherFragment();
         Bundle args = new Bundle();
-        args.putSerializable(PARCEL, parcel);
+        args.putSerializable(SETTINGS, settings);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public Parcel getParcel() {
-        Parcel parcel = (Parcel) getArguments().getSerializable(PARCEL);
-        return parcel;
+    public Settings getParcel() {
+        Settings settings = (Settings) getArguments().getSerializable(SETTINGS);
+        return settings;
     }
 
     @Override
@@ -55,25 +55,25 @@ public class TheWeatherFragment extends Fragment {
         TextView pressure = layout.findViewById(R.id.pressure);
         TextView water = layout.findViewById(R.id.water);
 
-        Parcel parcel = getParcel();
+        Settings settings = getParcel();
 
-        textView.setText(parcel.getCity());
-        if (parcel.isCheckWind()) {
+        textView.setText(settings.getCity());
+        if (settings.isCheckWind()) {
             wind.setVisibility(View.VISIBLE);
         } else {
             wind.setVisibility(View.GONE);
         }
-        if (parcel.isCheckHumidity()) {
+        if (settings.isCheckHumidity()) {
             humidity.setVisibility(View.VISIBLE);
         } else {
             humidity.setVisibility(View.GONE);
         }
-        if (parcel.isCheckPressure()) {
+        if (settings.isCheckPressure()) {
             pressure.setVisibility(View.VISIBLE);
         } else {
             pressure.setVisibility(View.GONE);
         }
-        if (parcel.isCheckWater()) {
+        if (settings.isCheckWater()) {
             water.setVisibility(View.VISIBLE);
         } else {
             water.setVisibility(View.GONE);

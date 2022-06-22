@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".TheWeatherFragment">
+    tools:context=".WeatherFragment">
 
     <TextView
         android:id="@+id/current_city"

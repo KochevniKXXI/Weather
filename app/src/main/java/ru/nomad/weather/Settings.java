@@ -4,14 +4,14 @@ import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 
-public class Parcel implements Serializable {
+public class Settings implements Serializable {
     private String city;
     private boolean isCheckWind;
     private boolean isCheckHumidity;
     private boolean isCheckPressure;
     private boolean isCheckWater;
 
-    public Parcel(String city, boolean isCheckWind, boolean isCheckHumidity, boolean isCheckPressure, boolean isCheckWater) {
+    public Settings(String city, boolean isCheckWind, boolean isCheckHumidity, boolean isCheckPressure, boolean isCheckWater) {
         this.city = city;
         this.isCheckWind = isCheckWind;
         this.isCheckHumidity = isCheckHumidity;
@@ -61,11 +61,11 @@ public class Parcel implements Serializable {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        Parcel parcel = (Parcel) obj;
-        return parcel.getCity().equals(this.city)
-                && parcel.isCheckWind() == this.isCheckWind
-                && parcel.isCheckHumidity() == this.isCheckHumidity
-                && parcel.isCheckPressure() == this.isCheckPressure
-                && parcel.isCheckWater() == this.isCheckWater;
+        Settings settings = (Settings) obj;
+        return settings.getCity().equals(this.city)
+                && settings.isCheckWind() == this.isCheckWind
+                && settings.isCheckHumidity() == this.isCheckHumidity
+                && settings.isCheckPressure() == this.isCheckPressure
+                && settings.isCheckWater() == this.isCheckWater;
     }
 }

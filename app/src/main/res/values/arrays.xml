@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="panoramas">
+        <item>@drawable/ic_msc</item>
+        <item>@drawable/ic_spb</item>
+        <item>@drawable/ic_kzn</item>
+        <item>@drawable/ic_arh</item>
+        <item>@drawable/ic_ekb</item>
+        <item>@drawable/ic_vlg</item>
+    </integer-array>
+
+    <string-array name="cities">
+        <item>Москва</item>
+        <item>Санкт-Петербург</item>
+        <item>Казань</item>
+        <item>Архангельск</item>
+        <item>Екатеринбург</item>
+        <item>Волгоград</item>
+    </string-array>
+</resources>

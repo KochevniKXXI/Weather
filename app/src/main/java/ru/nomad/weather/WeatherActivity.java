@@ -1,18 +1,18 @@
 package ru.nomad.weather;
 
-import static ru.nomad.weather.TheWeatherFragment.PARCEL;
+import static ru.nomad.weather.WeatherFragment.SETTINGS;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-public class TheWeather extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_the_weather);
+        setContentView(R.layout.activity_weather);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             finish();
@@ -20,10 +20,10 @@ public class TheWeather extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-            Parcel parcel = (Parcel) getIntent().getExtras().getSerializable(PARCEL);
-            TheWeatherFragment weather = TheWeatherFragment.newInstance(parcel);
+            Settings settings = (Settings) getIntent().getExtras().getSerializable(SETTINGS);
+            WeatherFragment weather = WeatherFragment.newInstance(settings);
             getSupportFragmentManager().beginTransaction().add(R.id.today, weather).commit();
-            WeekWeatherFragment weekWeatherFragment = WeekWeatherFragment.newInstance(parcel);
+            WeekWeatherFragment weekWeatherFragment = WeekWeatherFragment.newInstance(settings);
             getSupportFragmentManager().beginTransaction().add(R.id.week, weekWeatherFragment).commit();
         }
     }

@@ -1,6 +1,6 @@
 package ru.nomad.weather;
 
-import static ru.nomad.weather.TheWeatherFragment.PARCEL;
+import static ru.nomad.weather.WeatherFragment.SETTINGS;
 
 import android.os.Bundle;
 
@@ -19,7 +19,7 @@ import android.view.ViewGroup;
  */
 public class WeekWeatherFragment extends Fragment {
 
-    private Parcel parcel;
+    private Settings settings;
 
     public WeekWeatherFragment() {
         // Required empty public constructor
@@ -29,13 +29,13 @@ public class WeekWeatherFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param parcel Parameter 1.
+     * @param settings Parameter 1.
      * @return A new instance of fragment WeekWeatherFragment.
      */
-    public static WeekWeatherFragment newInstance(Parcel parcel) {
+    public static WeekWeatherFragment newInstance(Settings settings) {
         WeekWeatherFragment fragment = new WeekWeatherFragment();
         Bundle args = new Bundle();
-        args.putSerializable(PARCEL, parcel);
+        args.putSerializable(SETTINGS, settings);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,9 +45,9 @@ public class WeekWeatherFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            parcel = (Parcel) savedInstanceState.getSerializable(PARCEL);
+            settings = (Settings) savedInstanceState.getSerializable(SETTINGS);
         } else {
-            parcel = new Parcel("", false, false, false, false);
+            settings = new Settings("", false, false, false, false);
         }
     }
 
