@@ -36,7 +36,6 @@ public class WeatherFragment extends Fragment {
     public static final String SETTINGS = "settings";
     private static final String TAG = "WEATHER";
     private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,RU&appid=";
-    private static final String WEATHER_API_KEY = "";
 
     TextView city;
     TextView temperature;
@@ -110,7 +109,7 @@ public class WeatherFragment extends Fragment {
         String translateCity = getResources().getStringArray(R.array.translateCities)[Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(settings.getCity())];
 
         try {
-            final URL uri = new URL(String.format(WEATHER_URL, translateCity) + WEATHER_API_KEY);
+            final URL uri = new URL(String.format(WEATHER_URL, translateCity) + BuildConfig.WEATHER_API_KEY);
             final Handler handler = new Handler();
 
             new Thread(() -> {

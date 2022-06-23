@@ -6,7 +6,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:name="ru.nomad.weather.CitySelectionFragment"
-        android:id="@+id/first_settings"
+        android:id="@+id/city_selection"
         android:layout_width="0px"
         android:layout_height="match_parent"
         android:layout_weight="1" />
