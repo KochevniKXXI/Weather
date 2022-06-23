@@ -21,8 +21,6 @@ import android.view.ViewGroup;
  */
 public class CitySelectionFragment extends Fragment {
 
-
-
     private Settings currentSettings;
     private boolean isLandscape;
 

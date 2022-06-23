@@ -4,10 +4,25 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.stream.Collectors;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import ru.nomad.weather.model.WeatherRequest;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -18,6 +33,16 @@ public class WeatherFragment extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final String SETTINGS = "settings";
+    private static final String TAG = "WEATHER";
+    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=Moscow,RU&appid=";
+    private static final String WEATHER_API_KEY = "4e591a163eb820338636acabdce73d3b";
+
+    TextView city;
+    TextView temperature;
+    TextView wind;
+    TextView humidity;
+    TextView pressure;
+    TextView water;
 
     public WeatherFragment() {
         // Required empty public constructor
@@ -49,15 +74,16 @@ public class WeatherFragment extends Fragment {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_the_weather, container, false);
 
-        TextView textView = layout.findViewById(R.id.current_city);
-        TextView wind = layout.findViewById(R.id.wind);
-        TextView humidity = layout.findViewById(R.id.humidity);
-        TextView pressure = layout.findViewById(R.id.pressure);
-        TextView water = layout.findViewById(R.id.water);
+        city = layout.findViewById(R.id.current_city);
+        temperature = layout.findViewById(R.id.temperature);
+        wind = layout.findViewById(R.id.wind);
+        humidity = layout.findViewById(R.id.humidity);
+        pressure = layout.findViewById(R.id.pressure);
+        water = layout.findViewById(R.id.water);
 
         Settings settings = getParcel();
 
-        textView.setText(settings.getCity());
+        city.setText(settings.getCity());
         if (settings.isCheckWind()) {
             wind.setVisibility(View.VISIBLE);
         } else {
@@ -78,6 +104,46 @@ public class WeatherFragment extends Fragment {
         } else {
             water.setVisibility(View.GONE);
         }
+
+        try {
+            final URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
+            final Handler handler = new Handler();
+
+            new Thread(() -> {
+                HttpsURLConnection urlConnection = null;
+                try {
+                    urlConnection = ((HttpsURLConnection) uri.openConnection());
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setReadTimeout(10000);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                    String result = getLines(in);
+                    Gson gson = new Gson();
+                    final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
+                    handler.post(() -> displayWeather(weatherRequest));
+                } catch (IOException e) {
+                    Log.e(TAG, "Fail connection!", e);
+                    e.printStackTrace();
+                } finally {
+                    if (urlConnection != null) {
+                        urlConnection.disconnect();
+                    }
+                }
+            }).start();
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "Fail URI!", e);
+            e.printStackTrace();
+        }
         return layout;
+    }
+
+    private void displayWeather(WeatherRequest weatherRequest) {
+        temperature.setText(String.format("%f2", weatherRequest.getMain().getTemp()));
+        pressure.setText(String.format("%d", weatherRequest.getMain().getPressure()));
+        humidity.setText(String.format("%d", weatherRequest.getMain().getHumidity()));
+        wind.setText(String.format("%d", weatherRequest.getWind().getSpeed()));
+    }
+
+    private String getLines(BufferedReader in) {
+        return in.lines().collect(Collectors.joining("\n"));
     }
 }
