@@ -1,19 +1,19 @@
 package ru.nomad.weather.model;
 
 public class WeatherRequest {
-    private Coordinates coordinates;
+    private Coord coord;
     private Weather[] weather;
     private Main main;
     private Wind wind;
     private Clouds clouds;
     private String name;
 
-    public Coordinates getCoordinates() {
-        return coordinates;
+    public Coord getCoord() {
+        return coord;
     }
 
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
+    public void setCoord(Coord coord) {
+        this.coord = coord;
     }
 
     public Weather[] getWeather() {

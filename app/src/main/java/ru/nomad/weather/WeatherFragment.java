@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -34,8 +35,8 @@ public class WeatherFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final String SETTINGS = "settings";
     private static final String TAG = "WEATHER";
-    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=Moscow,RU&appid=";
-    private static final String WEATHER_API_KEY = "4e591a163eb820338636acabdce73d3b";
+    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,RU&appid=";
+    private static final String WEATHER_API_KEY = "";
 
     TextView city;
     TextView temperature;
@@ -105,8 +106,11 @@ public class WeatherFragment extends Fragment {
             water.setVisibility(View.GONE);
         }
 
+        // Получаем перевод города для запроса
+        String translateCity = getResources().getStringArray(R.array.translateCities)[Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(settings.getCity())];
+
         try {
-            final URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
+            final URL uri = new URL(String.format(WEATHER_URL, translateCity) + WEATHER_API_KEY);
             final Handler handler = new Handler();
 
             new Thread(() -> {
@@ -137,10 +141,10 @@ public class WeatherFragment extends Fragment {
     }
 
     private void displayWeather(WeatherRequest weatherRequest) {
-        temperature.setText(String.format("%f2", weatherRequest.getMain().getTemp()));
-        pressure.setText(String.format("%d", weatherRequest.getMain().getPressure()));
-        humidity.setText(String.format("%d", weatherRequest.getMain().getHumidity()));
-        wind.setText(String.format("%d", weatherRequest.getWind().getSpeed()));
+        temperature.setText(getResources().getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp() - 273.15f)));
+        pressure.setText(getResources().getString(R.string.pressure, weatherRequest.getMain().getPressure()));
+        humidity.setText(getResources().getString(R.string.humidity, weatherRequest.getMain().getHumidity()));
+        wind.setText(getResources().getString(R.string.wind, Math.round(weatherRequest.getWind().getSpeed())));
     }
 
     private String getLines(BufferedReader in) {

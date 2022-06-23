@@ -17,4 +17,13 @@
         <item>Екатеринбург</item>
         <item>Волгоград</item>
     </string-array>
+
+    <string-array name="translateCities">
+        <item>Moscow</item>
+        <item>Saint Petersburg</item>
+        <item>Kazan</item>
+        <item>Arkhangel’sk</item>
+        <item>Yekaterinburg</item>
+        <item>Volgograd</item>
+    </string-array>
 </resources>

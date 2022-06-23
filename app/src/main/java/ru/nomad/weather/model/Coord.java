@@ -1,6 +1,6 @@
 package ru.nomad.weather.model;
 
-public class Coordinates {
+public class Coord {
     private float lat;
     private float lon;
 
