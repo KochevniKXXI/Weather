@@ -12,4 +12,5 @@
     <string name="check_humidity">Влажность</string>
     <string name="check_pressure">Атмосферное давление</string>
     <string name="check_water">Температура воды</string>
+    <string name="error">ОШИБКА</string>
 </resources>

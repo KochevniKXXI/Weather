@@ -2,13 +2,19 @@ package ru.nomad.weather;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -43,6 +49,8 @@ public class WeatherFragment extends Fragment {
     TextView humidity;
     TextView pressure;
     TextView water;
+    FrameLayout error;
+    LinearLayout working;
 
     public WeatherFragment() {
         // Required empty public constructor
@@ -80,6 +88,8 @@ public class WeatherFragment extends Fragment {
         humidity = layout.findViewById(R.id.humidity);
         pressure = layout.findViewById(R.id.pressure);
         water = layout.findViewById(R.id.water);
+        error = layout.findViewById(R.id.error);
+        working = layout.findViewById(R.id.working);
 
         Settings settings = getParcel();
 
@@ -104,9 +114,14 @@ public class WeatherFragment extends Fragment {
         } else {
             water.setVisibility(View.GONE);
         }
+        setHasOptionsMenu(true);
 
         // Получаем перевод города для запроса
-        String translateCity = getResources().getStringArray(R.array.translateCities)[Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(settings.getCity())];
+        int index = Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(settings.getCity());
+        String translateCity = "unnamed";
+        if (index >= 0) {
+            translateCity = getResources().getStringArray(R.array.translateCities)[index];
+        }
 
         try {
             final URL uri = new URL(String.format(WEATHER_URL, translateCity) + BuildConfig.WEATHER_API_KEY);
@@ -124,6 +139,10 @@ public class WeatherFragment extends Fragment {
                     final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
                     handler.post(() -> displayWeather(weatherRequest));
                 } catch (IOException e) {
+                    handler.post(() -> {
+                        working.setVisibility(View.GONE);
+                        error.setVisibility(View.VISIBLE);
+                    });
                     Log.e(TAG, "Fail connection!", e);
                     e.printStackTrace();
                 } finally {
@@ -133,6 +152,8 @@ public class WeatherFragment extends Fragment {
                 }
             }).start();
         } catch (MalformedURLException e) {
+            working.setVisibility(View.GONE);
+            error.setVisibility(View.VISIBLE);
             Log.e(TAG, "Fail URI!", e);
             e.printStackTrace();
         }
@@ -148,5 +169,60 @@ public class WeatherFragment extends Fragment {
 
     private String getLines(BufferedReader in) {
         return in.lines().collect(Collectors.joining("\n"));
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
+
+        MenuItem wind = menu.findItem(R.id.action_wind);
+        MenuItem humidity = menu.findItem(R.id.action_humidity);
+        MenuItem pressure = menu.findItem(R.id.action_pressure);
+        MenuItem water = menu.findItem(R.id.action_water);
+
+        wind.setChecked(getParcel().isCheckWind());
+        humidity.setChecked(getParcel().isCheckHumidity());
+        pressure.setChecked(getParcel().isCheckPressure());
+        water.setChecked(getParcel().isCheckWater());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //FIXME: Не передаются настройки при повороте экрана
+        item.setChecked(!item.isChecked());
+        if (item.getItemId() == R.id.action_wind) {
+            getParcel().setCheckWind(item.isChecked());
+            if (getParcel().isCheckWind()) {
+                wind.setVisibility(View.VISIBLE);
+            } else {
+                wind.setVisibility(View.GONE);
+            }
+        }
+        if (item.getItemId() == R.id.action_humidity) {
+            getParcel().setCheckHumidity(item.isChecked());
+            if (getParcel().isCheckHumidity()) {
+                humidity.setVisibility(View.VISIBLE);
+            } else {
+                humidity.setVisibility(View.GONE);
+            }
+        }
+        if (item.getItemId() == R.id.action_pressure) {
+            getParcel().setCheckPressure(item.isChecked());
+            if (getParcel().isCheckPressure()) {
+                pressure.setVisibility(View.VISIBLE);
+            } else {
+                pressure.setVisibility(View.GONE);
+            }
+        }
+        if (item.getItemId() == R.id.action_water) {
+            getParcel().setCheckWater(item.isChecked());
+            if (getParcel().isCheckWater()) {
+                water.setVisibility(View.VISIBLE);
+            } else {
+                water.setVisibility(View.GONE);
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

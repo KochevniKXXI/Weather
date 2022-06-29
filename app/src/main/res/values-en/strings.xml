@@ -12,4 +12,5 @@
     <string name="check_humidity">Humidity</string>
     <string name="check_pressure">Atmospheric pressure</string>
     <string name="check_water">Water temperature</string>
+    <string name="error">ERROR</string>
 </resources>
