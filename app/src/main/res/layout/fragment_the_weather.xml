@@ -40,16 +40,15 @@
 
         <ImageView
             android:id="@+id/image_weather"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/sun" />
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            app:srcCompat="@drawable/ic_01d" />
 
         <TextView
-            android:id="@+id/text_weather"
+            android:id="@+id/description_weather"
             style="@style/temperature"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_weather" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/wind"

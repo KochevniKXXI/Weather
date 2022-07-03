@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,20 +32,16 @@ import javax.net.ssl.HttpsURLConnection;
 
 import ru.nomad.weather.model.WeatherRequest;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link WeatherFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class WeatherFragment extends Fragment {
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     public static final String SETTINGS = "settings";
     private static final String TAG = "WEATHER";
-    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,RU&appid=";
+    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,RU&appid=%s&lang=ru";
 
     TextView city;
     TextView temperature;
+    ImageView imageWeather;
+    TextView description;
     TextView wind;
     TextView humidity;
     TextView pressure;
@@ -52,17 +49,6 @@ public class WeatherFragment extends Fragment {
     FrameLayout error;
     LinearLayout working;
 
-    public WeatherFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param settings Parameter 1.
-     * @return A new instance of fragment WeatherFragment.
-     */
     public static WeatherFragment newInstance(Settings settings) {
         WeatherFragment fragment = new WeatherFragment();
         Bundle args = new Bundle();
@@ -71,7 +57,7 @@ public class WeatherFragment extends Fragment {
         return fragment;
     }
 
-    public Settings getParcel() {
+    public Settings getSettings() {
         Settings settings = (Settings) getArguments().getSerializable(SETTINGS);
         return settings;
     }
@@ -79,11 +65,12 @@ public class WeatherFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_the_weather, container, false);
 
         city = layout.findViewById(R.id.current_city);
         temperature = layout.findViewById(R.id.temperature);
+        imageWeather = layout.findViewById(R.id.image_weather);
+        description = layout.findViewById(R.id.description_weather);
         wind = layout.findViewById(R.id.wind);
         humidity = layout.findViewById(R.id.humidity);
         pressure = layout.findViewById(R.id.pressure);
@@ -91,7 +78,7 @@ public class WeatherFragment extends Fragment {
         error = layout.findViewById(R.id.error);
         working = layout.findViewById(R.id.working);
 
-        Settings settings = getParcel();
+        Settings settings = getSettings();
 
         city.setText(settings.getCity());
         if (settings.isCheckWind()) {
@@ -124,7 +111,7 @@ public class WeatherFragment extends Fragment {
         }
 
         try {
-            final URL uri = new URL(String.format(WEATHER_URL, translateCity) + BuildConfig.WEATHER_API_KEY);
+            final URL uri = new URL(String.format(WEATHER_URL, translateCity, BuildConfig.WEATHER_API_KEY));
             final Handler handler = new Handler();
 
             new Thread(() -> {
@@ -162,7 +149,9 @@ public class WeatherFragment extends Fragment {
 
     private void displayWeather(WeatherRequest weatherRequest) {
         temperature.setText(getResources().getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp() - 273.15f)));
-        pressure.setText(getResources().getString(R.string.pressure, weatherRequest.getMain().getPressure()));
+        imageWeather.setImageResource(getResources().getIdentifier(String.format("ic_%s", weatherRequest.getWeather()[0].getIcon()), "drawable", getContext().getPackageName()));
+        description.setText(weatherRequest.getWeather()[0].getDescription());
+        pressure.setText(getResources().getString(R.string.pressure, Math.round(weatherRequest.getMain().getPressure() * 0.750064f)));
         humidity.setText(getResources().getString(R.string.humidity, weatherRequest.getMain().getHumidity()));
         wind.setText(getResources().getString(R.string.wind, Math.round(weatherRequest.getWind().getSpeed())));
     }
@@ -181,10 +170,10 @@ public class WeatherFragment extends Fragment {
         MenuItem pressure = menu.findItem(R.id.action_pressure);
         MenuItem water = menu.findItem(R.id.action_water);
 
-        wind.setChecked(getParcel().isCheckWind());
-        humidity.setChecked(getParcel().isCheckHumidity());
-        pressure.setChecked(getParcel().isCheckPressure());
-        water.setChecked(getParcel().isCheckWater());
+        wind.setChecked(getSettings().isCheckWind());
+        humidity.setChecked(getSettings().isCheckHumidity());
+        pressure.setChecked(getSettings().isCheckPressure());
+        water.setChecked(getSettings().isCheckWater());
     }
 
     @Override
@@ -192,36 +181,37 @@ public class WeatherFragment extends Fragment {
         //FIXME: Не передаются настройки при повороте экрана
         item.setChecked(!item.isChecked());
         if (item.getItemId() == R.id.action_wind) {
-            getParcel().setCheckWind(item.isChecked());
-            if (getParcel().isCheckWind()) {
+            getSettings().setCheckWind(item.isChecked());
+            if (getSettings().isCheckWind()) {
                 wind.setVisibility(View.VISIBLE);
             } else {
                 wind.setVisibility(View.GONE);
             }
-        }
-        if (item.getItemId() == R.id.action_humidity) {
-            getParcel().setCheckHumidity(item.isChecked());
-            if (getParcel().isCheckHumidity()) {
+            return true;
+        } else if (item.getItemId() == R.id.action_humidity) {
+            getSettings().setCheckHumidity(item.isChecked());
+            if (getSettings().isCheckHumidity()) {
                 humidity.setVisibility(View.VISIBLE);
             } else {
                 humidity.setVisibility(View.GONE);
             }
-        }
-        if (item.getItemId() == R.id.action_pressure) {
-            getParcel().setCheckPressure(item.isChecked());
-            if (getParcel().isCheckPressure()) {
+            return true;
+        } else if (item.getItemId() == R.id.action_pressure) {
+            getSettings().setCheckPressure(item.isChecked());
+            if (getSettings().isCheckPressure()) {
                 pressure.setVisibility(View.VISIBLE);
             } else {
                 pressure.setVisibility(View.GONE);
             }
-        }
-        if (item.getItemId() == R.id.action_water) {
-            getParcel().setCheckWater(item.isChecked());
-            if (getParcel().isCheckWater()) {
+            return true;
+        } else if (item.getItemId() == R.id.action_water) {
+            getSettings().setCheckWater(item.isChecked());
+            if (getSettings().isCheckWater()) {
                 water.setVisibility(View.VISIBLE);
             } else {
                 water.setVisibility(View.GONE);
             }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

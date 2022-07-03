@@ -48,6 +48,7 @@ public class CitySelectionFragment extends Fragment {
         listCity.setLayoutManager(layoutManager);
         ListCityAdapter.OnCardCityClickListener cardCityClickListener = (city, position) -> {
             currentSettings = new Settings(city, true, true, true, true);
+            History.getInstance().addCity(city);
             showWeather(currentSettings);
         };
         ListCityAdapter adapter = new ListCityAdapter(getResources().getStringArray(R.array.cities), getResources().obtainTypedArray(R.array.panoramas), cardCityClickListener);
@@ -80,7 +81,7 @@ public class CitySelectionFragment extends Fragment {
 // Проверим, что фрагмент с прогнозом существует в activity
             WeatherFragment weather = (WeatherFragment) getFragmentManager().findFragmentById(R.id.weather_forecast);
 // если есть необходимость, то выведем прогноз
-            if (weather == null || !weather.getParcel().equals(settings)) {
+            if (weather == null || !weather.getSettings().equals(settings)) {
 // Создаем новый фрагмент с текущей позицией для вывода прогноза
                 weather = WeatherFragment.newInstance(settings);
 // Выполняем транзакцию по замене фрагмента

@@ -13,4 +13,11 @@
     <string name="check_pressure">Атмосферное давление</string>
     <string name="check_water">Температура воды</string>
     <string name="error">ОШИБКА</string>
+    <string name="title_activity_history">HistoryActivity</string>
+
+    <string name="menu">МЕНЮ</string>
+    <string name="nav_main">Главная</string>
+    <string name="nav_history">История</string>
+    <string name="navigation_drawer_open">OPEN</string>
+    <string name="navigation_drawer_close">CLOSE</string>
 </resources>

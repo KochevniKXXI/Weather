@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="ru.nomad.weather">
+    package="ru.nomad.weather" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,13 +14,16 @@
         android:roundIcon="@mipmap/ic_sun_weather_round"
         android:supportsRtl="true"
         android:theme="@style/CustomTheme"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false" />
         <activity
             android:name=".WeatherActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
