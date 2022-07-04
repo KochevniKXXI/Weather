@@ -10,6 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     interface OnCardCityClickListener {
@@ -17,12 +21,12 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private final OnCardCityClickListener onClickListener;
-    private final String[] cities;
-    private final TypedArray panoramas;
+    private final HashSet<String> cities;
+    private final Iterator<String> iterator;
 
-    public ListCityAdapter(String[] cities, TypedArray panoramas, OnCardCityClickListener onClickListener) {
+    public ListCityAdapter(HashSet<String> cities, OnCardCityClickListener onClickListener) {
         this.cities = cities;
-        this.panoramas = panoramas;
+        iterator = cities.iterator();
         this.onClickListener = onClickListener;
     }
 
@@ -35,28 +39,26 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((CardCity) holder).city.setText(cities[position]);
-        ((CardCity) holder).panorama.setImageResource(panoramas.getResourceId(position, -1));
+        ((CardCity) holder).city.setText(iterator.next());
+//        ((CardCity) holder).panorama.setImageResource(panoramas.getResourceId(position, -1));
 //        ((CardCity) holder).panorama.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 //        ((CardCity) holder).panorama.setBackgroundResource(R.drawable.ic_msc);
 
-        holder.itemView.setOnClickListener(v -> onClickListener.onCardClick(cities[holder.getAdapterPosition()], holder.getAdapterPosition()));
+        holder.itemView.setOnClickListener(v -> onClickListener.onCardClick(((CardCity) holder).city.getText().toString(), holder.getAdapterPosition()));
     }
 
     @Override
     public int getItemCount() {
-        return cities.length;
+        return cities.size();
     }
 
     static class CardCity extends RecyclerView.ViewHolder {
 
         TextView city;
-        ImageView panorama;
 
         public CardCity(@NonNull View itemView) {
             super(itemView);
             city = itemView.findViewById(R.id.city);
-            panorama = itemView.findViewById(R.id.panorama);
         }
 
 

@@ -2,7 +2,7 @@
     <string name="app_name">Погода</string>
     <string name="temperature" translatable="false">%1$d°C</string>
     <string name="input_city">Введите ваш город…</string>
-    <string name="check_the_weather">Узнать погоду</string>
+    <string name="check_weather">Узнать погоду</string>
     <string name="text_weather">Ясно</string>
     <string name="wind">Ветер: %1$d м/с</string>
     <string name="humidity">Влажность: %1$d</string>
@@ -20,4 +20,6 @@
     <string name="nav_history">История</string>
     <string name="navigation_drawer_open">OPEN</string>
     <string name="navigation_drawer_close">CLOSE</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

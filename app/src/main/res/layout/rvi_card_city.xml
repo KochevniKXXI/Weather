@@ -8,10 +8,6 @@
     app:cardCornerRadius="15dp"
     app:cardUseCompatPadding="true" >
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
     <TextView
         android:id="@+id/city"
         android:layout_width="wrap_content"
@@ -20,12 +16,17 @@
         android:textStyle="bold"
         android:textColor="@color/black"/>
 
-        <ImageView
-            android:id="@+id/panorama"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="200dp" />
+    <TextView
+        android:id="@+id/temperature"
+        style="@style/temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <ImageView
+        android:id="@+id/image_weather"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="220dp" />
 
 </androidx.cardview.widget.CardView>

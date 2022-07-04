@@ -41,8 +41,7 @@
         <ImageView
             android:id="@+id/image_weather"
             android:layout_width="128dp"
-            android:layout_height="128dp"
-            app:srcCompat="@drawable/ic_01d" />
+            android:layout_height="128dp" />
 
         <TextView
             android:id="@+id/description_weather"

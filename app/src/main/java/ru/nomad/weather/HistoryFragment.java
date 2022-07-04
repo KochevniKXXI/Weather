@@ -2,28 +2,31 @@ package ru.nomad.weather;
 
 import static ru.nomad.weather.WeatherFragment.SETTINGS;
 
-import android.content.Intent;
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-public class CitySelectionFragment extends Fragment {
+import java.util.HashSet;
+import java.util.Iterator;
+
+public class HistoryFragment extends Fragment {
 
     private Settings currentSettings;
     private boolean isLandscape;
+    private HashSet<String> visitedCities;
 
-    public static CitySelectionFragment newInstance() {
-        CitySelectionFragment fragment = new CitySelectionFragment();
+    public static HistoryFragment newInstance() {
+        HistoryFragment fragment = new HistoryFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -33,6 +36,7 @@ public class CitySelectionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        visitedCities = History.getInstance().getListCity();
         if (savedInstanceState != null) {
             currentSettings = (Settings) savedInstanceState.getSerializable(SETTINGS);
         } else {
@@ -43,15 +47,17 @@ public class CitySelectionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fCitySelection = inflater.inflate(R.layout.fragment_city_selection, container, false);
-        EditText inputCity = fCitySelection.findViewById(R.id.input_city);
-        Button button = fCitySelection.findViewById(R.id.check_weather);
-        button.setOnClickListener(v -> {
-            currentSettings = new Settings(inputCity.getText().toString(), true, true, true,true);
-            History.getInstance().addCity(currentSettings.getCity());
+        View fHistory = inflater.inflate(R.layout.fragment_history, container, false);
+        RecyclerView listCity = fHistory.findViewById(R.id.list_city);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        listCity.setLayoutManager(layoutManager);
+        ListCityAdapter.OnCardCityClickListener cardCityClickListener = (city, position) -> {
+            currentSettings = new Settings(city, true, true, true, true);
             showWeather(currentSettings);
-        });
-        return fCitySelection;
+        };
+        ListCityAdapter adapter = new ListCityAdapter(visitedCities, cardCityClickListener);
+        listCity.setAdapter(adapter);
+        return fHistory;
     }
 
     @Override

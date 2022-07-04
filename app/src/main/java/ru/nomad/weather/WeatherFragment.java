@@ -1,11 +1,6 @@
 package ru.nomad.weather;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,36 +13,31 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
-import javax.net.ssl.HttpsURLConnection;
-
+import ru.nomad.weather.model.Connection;
 import ru.nomad.weather.model.WeatherRequest;
 
 public class WeatherFragment extends Fragment {
 
     public static final String SETTINGS = "settings";
     private static final String TAG = "WEATHER";
-    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,RU&appid=%s&lang=ru";
 
-    TextView city;
-    TextView temperature;
-    ImageView imageWeather;
-    TextView description;
-    TextView wind;
-    TextView humidity;
-    TextView pressure;
-    TextView water;
-    FrameLayout error;
-    LinearLayout working;
+    private TextView city;
+    private TextView temperature;
+    private ImageView imageWeather;
+    private TextView description;
+    private TextView wind;
+    private TextView humidity;
+    private TextView pressure;
+    private TextView water;
+    private FrameLayout error;
+    private LinearLayout working;
 
     public static WeatherFragment newInstance(Settings settings) {
         WeatherFragment fragment = new WeatherFragment();
@@ -58,14 +48,13 @@ public class WeatherFragment extends Fragment {
     }
 
     public Settings getSettings() {
-        Settings settings = (Settings) getArguments().getSerializable(SETTINGS);
-        return settings;
+        return (Settings) getArguments().getSerializable(SETTINGS);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_the_weather, container, false);
+        View layout = inflater.inflate(R.layout.fragment_weather, container, false);
 
         city = layout.findViewById(R.id.current_city);
         temperature = layout.findViewById(R.id.temperature);
@@ -111,31 +100,21 @@ public class WeatherFragment extends Fragment {
         }
 
         try {
-            final URL uri = new URL(String.format(WEATHER_URL, translateCity, BuildConfig.WEATHER_API_KEY));
-            final Handler handler = new Handler();
+            Connection connection = new Connection(translateCity);
 
             new Thread(() -> {
-                HttpsURLConnection urlConnection = null;
                 try {
-                    urlConnection = ((HttpsURLConnection) uri.openConnection());
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.setReadTimeout(10000);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                    String result = getLines(in);
-                    Gson gson = new Gson();
-                    final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-                    handler.post(() -> displayWeather(weatherRequest));
+                    final WeatherRequest weatherRequest = connection.getWeatherRequest();
+                    connection.getHandler().post(() -> displayWeather(weatherRequest));
                 } catch (IOException e) {
-                    handler.post(() -> {
+                    connection.getHandler().post(() -> {
                         working.setVisibility(View.GONE);
                         error.setVisibility(View.VISIBLE);
                     });
                     Log.e(TAG, "Fail connection!", e);
                     e.printStackTrace();
                 } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
+                    connection.closeConnection();
                 }
             }).start();
         } catch (MalformedURLException e) {
@@ -154,10 +133,6 @@ public class WeatherFragment extends Fragment {
         pressure.setText(getResources().getString(R.string.pressure, Math.round(weatherRequest.getMain().getPressure() * 0.750064f)));
         humidity.setText(getResources().getString(R.string.humidity, weatherRequest.getMain().getHumidity()));
         wind.setText(getResources().getString(R.string.wind, Math.round(weatherRequest.getWind().getSpeed())));
-    }
-
-    private String getLines(BufferedReader in) {
-        return in.lines().collect(Collectors.joining("\n"));
     }
 
     @Override

@@ -7,10 +7,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/app_bar_main" >
 
-    <androidx.fragment.app.FragmentContainerView
+    <FrameLayout
         android:id="@+id/city_selection"
-        android:name="ru.nomad.weather.CitySelectionFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="?android:attr/detailsElementBackground">
+
+    </FrameLayout>
 
 </LinearLayout>

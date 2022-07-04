@@ -1,6 +1,5 @@
 package ru.nomad.weather;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -10,10 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private CitySelectionFragment citySelectionFragment;
+    private HistoryFragment historyFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
+        if (savedInstanceState == null) {
+            citySelectionFragment = CitySelectionFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().add(R.id.city_selection, citySelectionFragment, "CSF").commit();
+        } else {
+            citySelectionFragment = (CitySelectionFragment) getSupportFragmentManager().findFragmentByTag("CSF");
+            historyFragment = (HistoryFragment) getSupportFragmentManager().findFragmentByTag("HF");
+        }
     }
 
     private Toolbar initToolbar() {
@@ -41,10 +51,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.nav_main) {
-
+            if (citySelectionFragment == null) {
+                citySelectionFragment = CitySelectionFragment.newInstance();
+            }
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(historyFragment);
+            transaction.add(R.id.city_selection, citySelectionFragment, "CSF");
+            transaction.addToBackStack("");
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            transaction.commit();
         } else if (item.getItemId() == R.id.nav_history) {
-            Intent intent = new Intent(this, HistoryActivity.class);
-            startActivity(intent);
+            if (historyFragment == null) {
+                historyFragment = HistoryFragment.newInstance();
+            }
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(citySelectionFragment);
+            transaction.add(R.id.city_selection, historyFragment, "HF");
+            transaction.addToBackStack("");
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            transaction.commit();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
