@@ -83,7 +83,6 @@ public class CitySelectionFragment extends Fragment {
 // Создаем новый фрагмент с текущей позицией для вывода прогноза
                 weather = WeatherFragment.newInstance(settings);
 // Выполняем транзакцию по замене фрагмента
-                //FIXME: Ошибка при замене фрагмента
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.weather_forecast, weather); // замена фрагмента
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

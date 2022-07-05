@@ -127,12 +127,14 @@ public class WeatherFragment extends Fragment {
     }
 
     private void displayWeather(WeatherRequest weatherRequest) {
-        temperature.setText(getResources().getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp() - 273.15f)));
-        imageWeather.setImageResource(getResources().getIdentifier(String.format("ic_%s", weatherRequest.getWeather()[0].getIcon()), "drawable", getContext().getPackageName()));
-        description.setText(weatherRequest.getWeather()[0].getDescription());
-        pressure.setText(getResources().getString(R.string.pressure, Math.round(weatherRequest.getMain().getPressure() * 0.750064f)));
-        humidity.setText(getResources().getString(R.string.humidity, weatherRequest.getMain().getHumidity()));
-        wind.setText(getResources().getString(R.string.wind, Math.round(weatherRequest.getWind().getSpeed())));
+        if (isAdded()) {
+            temperature.setText(getResources().getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp() - 273.15f)));
+            imageWeather.setImageResource(getResources().getIdentifier(String.format("ic_%s", weatherRequest.getWeather()[0].getIcon()), "drawable", getContext().getPackageName()));
+            description.setText(weatherRequest.getWeather()[0].getDescription());
+            pressure.setText(getResources().getString(R.string.pressure, Math.round(weatherRequest.getMain().getPressure() * 0.750064f)));
+            humidity.setText(getResources().getString(R.string.humidity, weatherRequest.getMain().getHumidity()));
+            wind.setText(getResources().getString(R.string.wind, Math.round(weatherRequest.getWind().getSpeed())));
+        }
     }
 
     @Override

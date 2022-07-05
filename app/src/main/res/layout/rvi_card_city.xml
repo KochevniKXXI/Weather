@@ -3,30 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    app:contentPadding="20dp"
-    app:cardElevation="5dp"
     app:cardCornerRadius="15dp"
-    app:cardUseCompatPadding="true" >
+    app:cardElevation="5dp"
+    app:cardUseCompatPadding="true">
 
-    <TextView
-        android:id="@+id/city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"/>
+    <LinearLayout
+        android:id="@+id/card_history"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp" >
 
-    <TextView
-        android:id="@+id/temperature"
-        style="@style/temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp" />
+        <TextView
+            android:id="@+id/city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-    <ImageView
-        android:id="@+id/image_weather"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:layout_marginStart="220dp" />
+        <TextView
+            android:id="@+id/temperature"
+            style="@style/temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp" />
+
+        <ImageView
+            android:id="@+id/image_weather"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_marginStart="220dp" />
+
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
