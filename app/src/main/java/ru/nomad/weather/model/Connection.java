@@ -16,7 +16,7 @@ import javax.net.ssl.HttpsURLConnection;
 import ru.nomad.weather.BuildConfig;
 
 public class Connection {
-    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,RU&appid=%s&lang=ru";
+    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,RU&appid=%s&units=metric&lang=ru";
     private final URL uri;
     private final Handler handler = new Handler();
     private HttpsURLConnection urlConnection = null;

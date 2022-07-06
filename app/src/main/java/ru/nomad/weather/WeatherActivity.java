@@ -2,10 +2,11 @@ package ru.nomad.weather;
 
 import static ru.nomad.weather.WeatherFragment.SETTINGS;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.res.Configuration;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 public class WeatherActivity extends AppCompatActivity {
 
@@ -13,6 +14,7 @@ public class WeatherActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+        Toolbar toolbar = initToolbar();
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             finish();
@@ -26,5 +28,11 @@ public class WeatherActivity extends AppCompatActivity {
             WeekWeatherFragment weekWeatherFragment = WeekWeatherFragment.newInstance(settings);
             getSupportFragmentManager().beginTransaction().add(R.id.week, weekWeatherFragment).commit();
         }
+    }
+
+    private Toolbar initToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        return toolbar;
     }
 }

@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 
 import ru.nomad.weather.model.Connection;
 import ru.nomad.weather.model.WeatherRequest;
@@ -92,20 +91,13 @@ public class WeatherFragment extends Fragment {
         }
         setHasOptionsMenu(true);
 
-        // Получаем перевод города для запроса
-        int index = Arrays.asList(getResources().getStringArray(R.array.cities)).indexOf(settings.getCity());
-        String translateCity = "unnamed";
-        if (index >= 0) {
-            translateCity = getResources().getStringArray(R.array.translateCities)[index];
-        }
-
         try {
-            Connection connection = new Connection(translateCity);
-
+            Connection connection = new Connection(settings.getCity());
             new Thread(() -> {
                 try {
                     final WeatherRequest weatherRequest = connection.getWeatherRequest();
                     connection.getHandler().post(() -> displayWeather(weatherRequest));
+                    History.getInstance().addCity(settings.getCity());
                 } catch (IOException e) {
                     connection.getHandler().post(() -> {
                         working.setVisibility(View.GONE);
@@ -128,7 +120,7 @@ public class WeatherFragment extends Fragment {
 
     private void displayWeather(WeatherRequest weatherRequest) {
         if (isAdded()) {
-            temperature.setText(getResources().getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp() - 273.15f)));
+            temperature.setText(getResources().getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp())));
             imageWeather.setImageResource(getResources().getIdentifier(String.format("ic_%s", weatherRequest.getWeather()[0].getIcon()), "drawable", getContext().getPackageName()));
             description.setText(weatherRequest.getWeather()[0].getDescription());
             pressure.setText(getResources().getString(R.string.pressure, Math.round(weatherRequest.getMain().getPressure() * 0.750064f)));

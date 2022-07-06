@@ -2,8 +2,6 @@ package ru.nomad.weather;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import ru.nomad.weather.model.Connection;
 import ru.nomad.weather.model.WeatherRequest;
@@ -27,7 +23,7 @@ import ru.nomad.weather.model.WeatherRequest;
 public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     interface OnCardCityClickListener {
-        void onCardClick (String city, int position);
+        void onCardClick(String city, int position);
     }
 
     private final OnCardCityClickListener onClickListener;
@@ -54,22 +50,16 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ((CardCity) holder).city.setText(iterator.next());
-        // Получаем перевод города для запроса
-        int index = Arrays.asList(resources.getStringArray(R.array.cities)).indexOf(((CardCity) holder).city.getText().toString());
-        String translateCity = "unnamed";
-        if (index >= 0) {
-            translateCity = resources.getStringArray(R.array.translateCities)[index];
-        }
 
         try {
-            Connection connection = new Connection(translateCity);
+            Connection connection = new Connection(((CardCity) holder).city.getText().toString());
 
             new Thread(() -> {
                 try {
                     final WeatherRequest weatherRequest = connection.getWeatherRequest();
                     connection.getHandler().post(() -> {
                         ((CardCity) holder).cardHistory.setBackgroundResource(resources.getIdentifier(String.format("bc_%sd", weatherRequest.getWeather()[0].getIcon().substring(0, 2)), "drawable", context.getPackageName()));
-                        ((CardCity) holder).temperature.setText(resources.getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp() - 273.15f)));
+                        ((CardCity) holder).temperature.setText(resources.getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp())));
                         ((CardCity) holder).imageWeather.setImageResource(resources.getIdentifier(String.format("ic_%s", weatherRequest.getWeather()[0].getIcon()), "drawable", context.getPackageName()));
                     });
                 } catch (IOException e) {

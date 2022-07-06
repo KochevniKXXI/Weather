@@ -3,11 +3,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="150dp"
-    android:gravity="bottom" >
+    android:gravity="bottom"
+    android:background="@drawable/loading"
+    android:padding="20dp" >
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/menu" />
+        android:text="@string/menu"
+        android:textSize="@dimen/city"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
 
 </LinearLayout>

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Weather</string>
     <string name="input_city">Enter your city…</string>
-    <string name="check_the_weather">Find out the weather</string>
+    <string name="check_weather">Find out the weather</string>
     <string name="text_weather">Clear</string>
     <string name="wind">Wind: %1$d m/s</string>
     <string name="humidity">Humidity: %1$d</string>

@@ -4,18 +4,17 @@ import static ru.nomad.weather.WeatherFragment.SETTINGS;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class CitySelectionFragment extends Fragment {
 
@@ -46,9 +45,28 @@ public class CitySelectionFragment extends Fragment {
         View fCitySelection = inflater.inflate(R.layout.fragment_city_selection, container, false);
         EditText inputCity = fCitySelection.findViewById(R.id.input_city);
         Button button = fCitySelection.findViewById(R.id.check_weather);
+        inputCity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().trim().length() > 0) {
+                    button.setEnabled(!s.toString().isEmpty());
+                } else {
+                    button.setEnabled(false);
+                }
+            }
+        });
         button.setOnClickListener(v -> {
-            currentSettings = new Settings(inputCity.getText().toString(), true, true, true,true);
-            History.getInstance().addCity(currentSettings.getCity());
+            currentSettings = new Settings(inputCity.getText().toString(), true, true, true, true);
             showWeather(currentSettings);
         });
         return fCitySelection;
@@ -77,13 +95,13 @@ public class CitySelectionFragment extends Fragment {
     public void showWeather(Settings settings) {
         if (isLandscape) {
 // Проверим, что фрагмент с прогнозом существует в activity
-            WeatherFragment weather = (WeatherFragment) getFragmentManager().findFragmentById(R.id.weather_forecast);
+            WeatherFragment weather = (WeatherFragment) getParentFragmentManager().findFragmentById(R.id.weather_forecast);
 // если есть необходимость, то выведем прогноз
             if (weather == null || !weather.getSettings().equals(settings)) {
 // Создаем новый фрагмент с текущей позицией для вывода прогноза
                 weather = WeatherFragment.newInstance(settings);
 // Выполняем транзакцию по замене фрагмента
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getParentFragmentManager().beginTransaction();
                 ft.replace(R.id.weather_forecast, weather); // замена фрагмента
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.commit();
