@@ -8,6 +8,7 @@
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/drawable/ic_kzn.xml" value="0.143" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1775" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/drawable/ic_msc.xml" value="0.143" />
+        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/drawable/ic_scale.xml" value="0.134" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout-land/activity_main.xml" value="0.1" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout-land/content_main.xml" value="0.146875" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/activity_history.xml" value="0.161231884057971" />
@@ -19,16 +20,21 @@
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/content_main.xml" value="0.22" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/first_settings.xml" value="0.25" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_city_selection.xml" value="0.33" />
+        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_dialog.xml" value="0.1641337386018237" />
+        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_dialog_error.xml" value="0.12771739130434784" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_first_settings.xml" value="0.1641337386018237" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_history.xml" value="0.10054347826086957" />
+        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_input_city_bottom_sheet_dialog.xml" value="0.12771739130434784" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_the_weather.xml" value="0.1641337386018237" />
-        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_weather.xml" value="0.1641337386018237" />
+        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_weather.xml" value="0.25" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/fragment_week_weather.xml" value="0.1641337386018237" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/history_item.xml" value="0.161231884057971" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/menu_main.xml" value="0.14719202898550723" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/nav_header_main.xml" value="0.1" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/one_day_weather.xml" value="0.1641337386018237" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/rvi_card_city.xml" value="0.25" />
+        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/sample_my_view.xml" value="0.12771739130434784" />
+        <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/sample_thermometer_view.xml" value="0.12771739130434784" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/layout/the_weather.xml" value="0.33" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/menu/menu_history.xml" value="0.2611111111111111" />
         <entry key="..\:/Portfolio/IIQ/Weather/app/src/main/res/menu/menu_main.xml" value="0.16875" />

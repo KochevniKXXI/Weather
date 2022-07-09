@@ -2,6 +2,7 @@ package ru.nomad.weather;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -11,6 +12,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
+        initFab();
         if (savedInstanceState == null) {
             citySelectionFragment = CitySelectionFragment.newInstance();
             getSupportFragmentManager().beginTransaction().add(R.id.city_selection, citySelectionFragment, "CSF").commit();
@@ -46,6 +49,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void initFab() {
+        FloatingActionButton inputCity = findViewById(R.id.input_city);
+        inputCity.setOnClickListener(v -> {
+            InputCityBottomSheetDialogFragment inputCityDialog = InputCityBottomSheetDialogFragment.newInstance();
+            inputCityDialog.show(getSupportFragmentManager(), "input_city_dialog");
+        });
     }
 
     @Override

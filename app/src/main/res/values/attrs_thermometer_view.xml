@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <declare-styleable name="ThermometerView">
+        <attr name="thermometerColor" format="color" />
+        <attr name="mercuryColor" format="color" />
+        <attr name="mercuryLevel" format="integer" />
+    </declare-styleable>
+</resources>

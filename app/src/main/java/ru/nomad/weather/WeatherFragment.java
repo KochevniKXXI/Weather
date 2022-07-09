@@ -37,6 +37,7 @@ public class WeatherFragment extends Fragment {
     private TextView water;
     private FrameLayout error;
     private LinearLayout working;
+    private ThermometerView thermometer;
 
     public static WeatherFragment newInstance(Settings settings) {
         WeatherFragment fragment = new WeatherFragment();
@@ -65,6 +66,7 @@ public class WeatherFragment extends Fragment {
         water = layout.findViewById(R.id.water);
         error = layout.findViewById(R.id.error);
         working = layout.findViewById(R.id.working);
+        thermometer = layout.findViewById(R.id.thermometer);
 
         Settings settings = getSettings();
 
@@ -103,6 +105,8 @@ public class WeatherFragment extends Fragment {
                         working.setVisibility(View.GONE);
                         error.setVisibility(View.VISIBLE);
                     });
+                    ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail connection!");
+                    errorDialog.show(getParentFragmentManager(), "errorDialog");
                     Log.e(TAG, "Fail connection!", e);
                     e.printStackTrace();
                 } finally {
@@ -112,6 +116,8 @@ public class WeatherFragment extends Fragment {
         } catch (MalformedURLException e) {
             working.setVisibility(View.GONE);
             error.setVisibility(View.VISIBLE);
+            ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail URI!");
+            errorDialog.show(getParentFragmentManager(), "errorDialog");
             Log.e(TAG, "Fail URI!", e);
             e.printStackTrace();
         }
@@ -126,6 +132,7 @@ public class WeatherFragment extends Fragment {
             pressure.setText(getResources().getString(R.string.pressure, Math.round(weatherRequest.getMain().getPressure() * 0.750064f)));
             humidity.setText(getResources().getString(R.string.humidity, weatherRequest.getMain().getHumidity()));
             wind.setText(getResources().getString(R.string.wind, Math.round(weatherRequest.getWind().getSpeed())));
+            thermometer.setMercuryLevel((int) weatherRequest.getMain().getTemp());
         }
     }
 
