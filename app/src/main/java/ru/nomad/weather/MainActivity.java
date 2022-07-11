@@ -1,8 +1,10 @@
 package ru.nomad.weather;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -17,7 +19,7 @@ import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private CitySelectionFragment citySelectionFragment;
+    private MainFragment mainFragment;
     private HistoryFragment historyFragment;
 
     @Override
@@ -28,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initDrawer(toolbar);
         initFab();
         if (savedInstanceState == null) {
-            citySelectionFragment = CitySelectionFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().add(R.id.city_selection, citySelectionFragment, "CSF").commit();
+            mainFragment = MainFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().add(R.id.city_selection, mainFragment, "CSF").commit();
         } else {
-            citySelectionFragment = (CitySelectionFragment) getSupportFragmentManager().findFragmentByTag("CSF");
+            mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag("CSF");
             historyFragment = (HistoryFragment) getSupportFragmentManager().findFragmentByTag("HF");
         }
     }
@@ -62,12 +64,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.nav_main) {
-            if (citySelectionFragment == null) {
-                citySelectionFragment = CitySelectionFragment.newInstance();
+            if (mainFragment == null) {
+                mainFragment = MainFragment.newInstance();
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.remove(historyFragment);
-            transaction.add(R.id.city_selection, citySelectionFragment, "CSF");
+            transaction.add(R.id.city_selection, mainFragment, "CSF");
             transaction.addToBackStack("");
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.commit();
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 historyFragment = HistoryFragment.newInstance();
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(citySelectionFragment);
+            transaction.remove(mainFragment);
             transaction.add(R.id.city_selection, historyFragment, "HF");
             transaction.addToBackStack("");
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

@@ -2,7 +2,12 @@ package ru.nomad.weather;
 
 import static ru.nomad.weather.WeatherFragment.SETTINGS;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,18 +16,46 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-public class CitySelectionFragment extends Fragment {
+public class MainFragment extends Fragment {
 
+    private TextView ambientTemperature;
+    private TextView relativeHumidity;
     private Settings currentSettings;
     private boolean isLandscape;
+    private SensorManager sensorManager;
+    private Sensor sensorTemperature;
+    private Sensor sensorHumidity;
+    private final SensorEventListener temperatureListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            ambientTemperature.setText(String.valueOf(event.values[0]));
+        }
 
-    public static CitySelectionFragment newInstance() {
-        CitySelectionFragment fragment = new CitySelectionFragment();
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+    private final SensorEventListener humidityListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            relativeHumidity.setText(String.valueOf(event.values[0]));
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
+    public static MainFragment newInstance() {
+        MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -37,39 +70,19 @@ public class CitySelectionFragment extends Fragment {
         } else {
             currentSettings = new Settings("", true, true, true, true);
         }
+
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensorTemperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        sensorHumidity = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fCitySelection = inflater.inflate(R.layout.fragment_city_selection, container, false);
-        EditText inputCity = fCitySelection.findViewById(R.id.input_city);
-        Button button = fCitySelection.findViewById(R.id.check_weather);
-        inputCity.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().trim().length() > 0) {
-                    button.setEnabled(!s.toString().isEmpty());
-                } else {
-                    button.setEnabled(false);
-                }
-            }
-        });
-        button.setOnClickListener(v -> {
-            currentSettings = new Settings(inputCity.getText().toString(), true, true, true, true);
-            showWeather(currentSettings);
-        });
-        return fCitySelection;
+        View layout = inflater.inflate(R.layout.fragment_main, container, false);
+        ambientTemperature = layout.findViewById(R.id.ambient_temperature);
+        relativeHumidity = layout.findViewById(R.id.relative_humidity);
+        return layout;
     }
 
     @Override
@@ -87,9 +100,31 @@ public class CitySelectionFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (sensorTemperature != null) {
+            sensorManager.registerListener(temperatureListener, sensorTemperature, SensorManager.SENSOR_DELAY_NORMAL);
+        } else {
+            ambientTemperature.setText("Датчик температуры не обнаружен");
+        }
+        if (sensorHumidity != null) {
+            sensorManager.registerListener(humidityListener, sensorHumidity, SensorManager.SENSOR_DELAY_NORMAL);
+        } else {
+            relativeHumidity.setText("Датчик влажности не обнаружен");
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(SETTINGS, currentSettings);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(temperatureListener, sensorTemperature);
+        sensorManager.unregisterListener(humidityListener, sensorTemperature);
     }
 
     public void showWeather(Settings settings) {

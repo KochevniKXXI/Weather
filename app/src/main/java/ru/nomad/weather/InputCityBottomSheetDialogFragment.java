@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
@@ -42,7 +41,7 @@ public class InputCityBottomSheetDialogFragment extends BottomSheetDialogFragmen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fCitySelection = inflater.inflate(R.layout.fragment_city_selection, container, false);
+        View fCitySelection = inflater.inflate(R.layout.fragment_input_city_bottom_sheet_dialog, container, false);
         setCancelable(false);
         EditText inputCity = fCitySelection.findViewById(R.id.input_city);
         Button button = fCitySelection.findViewById(R.id.check_weather);
