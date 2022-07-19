@@ -14,8 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 import ru.nomad.weather.model.Connection;
 import ru.nomad.weather.model.WeatherRequest;
@@ -27,14 +26,12 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private final OnCardCityClickListener onClickListener;
-    private final HashSet<String> cities;
-    private final Iterator<String> iterator;
+    private String[] cities;
     private Resources resources;
     private Context context;
 
-    public ListCityAdapter(HashSet<String> cities, OnCardCityClickListener onClickListener) {
-        this.cities = cities;
-        iterator = cities.iterator();
+    public ListCityAdapter(LinkedHashSet<String> cities, OnCardCityClickListener onClickListener) {
+        this.cities = cities.toArray(new String[0]);
         this.onClickListener = onClickListener;
     }
 
@@ -49,7 +46,7 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((CardCity) holder).city.setText(iterator.next());
+        ((CardCity) holder).city.setText(cities[getItemCount() - 1 - position]);
 
         try {
             Connection connection = new Connection(((CardCity) holder).city.getText().toString());
@@ -85,7 +82,7 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return cities.size();
+        return cities.length;
     }
 
     static class CardCity extends RecyclerView.ViewHolder {
@@ -102,7 +99,9 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             temperature = itemView.findViewById(R.id.temperature);
             imageWeather = itemView.findViewById(R.id.image_weather);
         }
+    }
 
-
+    public void setCities(LinkedHashSet<String> cities) {
+        this.cities = cities.toArray(new String[0]);
     }
 }

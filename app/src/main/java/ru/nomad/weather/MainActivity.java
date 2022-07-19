@@ -2,9 +2,12 @@ package ru.nomad.weather;
 
 import android.content.Context;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -12,30 +15,59 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    private MainFragment mainFragment;
+    // Фрагменты
     private HistoryFragment historyFragment;
+    // Окружающая (либо текущего местоположения, либо последнего запрошенного города)
+    // температура и влажность
+    private TextView ambientTemperature;
+    private TextView relativeHumidity;
+    // Датчики
+    private SensorManager sensorManager;
+    private Sensor sensorTemperature;
+    private Sensor sensorHumidity;
+    // "Слушатели" датчиков
+    private final SensorEventListener temperatureListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            ambientTemperature.setText(String.valueOf(event.values[0]));
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
+    private final SensorEventListener humidityListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            relativeHumidity.setText(String.valueOf(event.values[0]));
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
         initFab();
-        if (savedInstanceState == null) {
-            mainFragment = MainFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().add(R.id.city_selection, mainFragment, "CSF").commit();
-        } else {
-            mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag("CSF");
-            historyFragment = (HistoryFragment) getSupportFragmentManager().findFragmentByTag("HF");
-        }
+
+        initFragments();
+
+        initSensors();
+        initViews();
     }
 
     private Toolbar initToolbar() {
@@ -61,29 +93,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void initFragments() {
+        historyFragment = HistoryFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.city_selection, historyFragment).commit();
+    }
+
+    private void initSensors() {
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorTemperature = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        sensorHumidity = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+    }
+
+    private void initViews() {
+        ambientTemperature = findViewById(R.id.ambient_temperature);
+        relativeHumidity = findViewById(R.id.relative_humidity);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (sensorTemperature != null) {
+            sensorManager.registerListener(temperatureListener, sensorTemperature, SensorManager.SENSOR_DELAY_NORMAL);
+        } else {
+            ambientTemperature.setText("+21°C");
+        }
+        if (sensorHumidity != null) {
+            sensorManager.registerListener(humidityListener, sensorHumidity, SensorManager.SENSOR_DELAY_NORMAL);
+        } else {
+            relativeHumidity.setText("13%");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(temperatureListener, sensorTemperature);
+        sensorManager.unregisterListener(humidityListener, sensorTemperature);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.nav_main) {
-            if (mainFragment == null) {
-                mainFragment = MainFragment.newInstance();
-            }
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(historyFragment);
-            transaction.add(R.id.city_selection, mainFragment, "CSF");
-            transaction.addToBackStack("");
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            transaction.commit();
-        } else if (item.getItemId() == R.id.nav_history) {
-            if (historyFragment == null) {
-                historyFragment = HistoryFragment.newInstance();
-            }
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(mainFragment);
-            transaction.add(R.id.city_selection, historyFragment, "HF");
-            transaction.addToBackStack("");
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            transaction.commit();
-        }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

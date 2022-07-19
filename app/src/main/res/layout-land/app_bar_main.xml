@@ -22,13 +22,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center_horizontal" >
 
                 <TextView
                     android:id="@+id/ambient_temperature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="50dp" />
+                    android:layout_marginStart="50dp"/>
 
                 <TextView
                     android:id="@+id/relative_humidity"

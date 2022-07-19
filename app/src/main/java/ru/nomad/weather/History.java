@@ -1,13 +1,13 @@
 package ru.nomad.weather;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public class History {
-    private HashSet<String> listCity;
+    private LinkedHashSet<String> listCity;
     private static History instance;
 
     private History() {
-        listCity = new HashSet<>();
+        listCity = new LinkedHashSet<>();
     }
 
     public static History getInstance() {
@@ -21,7 +21,15 @@ public class History {
         listCity.add(city);
     }
 
-    public HashSet<String> getListCity() {
+    public void removeCity(String city) {
+        listCity.remove(city);
+    }
+
+    public LinkedHashSet<String> getListCity() {
         return listCity;
+    }
+
+    public void setListCity(LinkedHashSet<String> listCity) {
+        this.listCity = listCity;
     }
 }

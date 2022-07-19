@@ -1,6 +1,6 @@
 package ru.nomad.weather;
 
-import static ru.nomad.weather.WeatherFragment.SETTINGS;
+import static ru.nomad.weather.InputCityBottomSheetDialogFragment.INPUT_CITY;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,14 +20,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 public class HistoryFragment extends Fragment {
 
-    private Settings currentSettings;
     private boolean isLandscape;
     private HashSet<String> queryCity;
-    private HashSet<String> visitedCities;
+    private LinkedHashSet<String> visitedCities;
     private RecyclerView listCity;
+    ListCityAdapter adapter;
 
     public static HistoryFragment newInstance() {
         HistoryFragment fragment = new HistoryFragment();
@@ -41,31 +42,24 @@ public class HistoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         visitedCities = History.getInstance().getListCity();
-        if (savedInstanceState != null) {
-            currentSettings = (Settings) savedInstanceState.getSerializable(SETTINGS);
-        } else {
-            currentSettings = new Settings("", true, true, true, true);
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fHistory = inflater.inflate(R.layout.fragment_history, container, false);
         listCity = fHistory.findViewById(R.id.list_city);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         listCity.setLayoutManager(layoutManager);
         ListCityAdapter.OnCardCityClickListener cardCityClickListener = (city, position) -> {
-            currentSettings = new Settings(city, true, true, true, true);
-            showWeather(currentSettings);
+            History.getInstance().removeCity(city);
+            showWeather(city);
         };
-        ListCityAdapter adapter;
-        if (queryCity == null) {
+//        if (queryCity == null) {
             adapter = new ListCityAdapter(visitedCities, cardCityClickListener);
-        } else {
-            adapter = new ListCityAdapter(queryCity, cardCityClickListener);
-        }
-        listCity.setAdapter(adapter);
+//        } else {
+//            adapter = new ListCityAdapter(queryCity, cardCityClickListener);
+//        }
+//        listCity.setAdapter(adapter);
         setHasOptionsMenu(true);
         return fHistory;
     }
@@ -74,20 +68,22 @@ public class HistoryFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        adapter.setCities(visitedCities);
+        listCity.setAdapter(adapter);
+
         // Определение, можно ли будет расположить рядом прогноз в другом фрагменте
         View weatherFrame = getActivity().findViewById(R.id.weather_forecast);
         // getActivity - получить контекст activity, где расположен фрагмент
         isLandscape = weatherFrame != null && weatherFrame.getVisibility() == View.VISIBLE;
         // Если можно отобразить рядом прогноз, то сделаем это
         if (isLandscape) {
-            showWeather(currentSettings);
+            showWeather(visitedCities.toArray()[visitedCities.size() - 1].toString());
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(SETTINGS, currentSettings);
     }
 
     @Override
@@ -126,14 +122,14 @@ public class HistoryFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showWeather(Settings settings) {
+    public void showWeather(String selectedCity) {
         if (isLandscape) {
 // Проверим, что фрагмент с прогнозом существует в activity
             WeatherFragment weather = (WeatherFragment) getParentFragmentManager().findFragmentById(R.id.weather_forecast);
 // если есть необходимость, то выведем прогноз
-            if (weather == null || !weather.getSettings().equals(settings)) {
+            if (weather == null || !weather.getCity().equals(selectedCity)) {
 // Создаем новый фрагмент с текущей позицией для вывода прогноза
-                weather = WeatherFragment.newInstance(settings);
+                weather = WeatherFragment.newInstance(selectedCity);
 // Выполняем транзакцию по замене фрагмента
                 FragmentTransaction ft = getParentFragmentManager().beginTransaction();
                 ft.replace(R.id.weather_forecast, weather); // замена фрагмента
@@ -142,7 +138,7 @@ public class HistoryFragment extends Fragment {
             }
         } else {
             Intent intent = new Intent(getActivity(), WeatherActivity.class);
-            intent.putExtra(SETTINGS, settings);
+            intent.putExtra(INPUT_CITY, selectedCity);
             startActivity(intent);
         }
     }

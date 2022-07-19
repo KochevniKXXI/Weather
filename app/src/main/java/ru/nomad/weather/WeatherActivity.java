@@ -1,6 +1,6 @@
 package ru.nomad.weather;
 
-import static ru.nomad.weather.WeatherFragment.SETTINGS;
+import static ru.nomad.weather.InputCityBottomSheetDialogFragment.INPUT_CITY;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -22,10 +22,10 @@ public class WeatherActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-            Settings settings = (Settings) getIntent().getExtras().getSerializable(SETTINGS);
-            WeatherFragment weather = WeatherFragment.newInstance(settings);
+            String enteredCity = getIntent().getExtras().getString(INPUT_CITY);
+            WeatherFragment weather = WeatherFragment.newInstance(enteredCity);
             getSupportFragmentManager().beginTransaction().add(R.id.today, weather).commit();
-            WeekWeatherFragment weekWeatherFragment = WeekWeatherFragment.newInstance(settings);
+            WeekWeatherFragment weekWeatherFragment = WeekWeatherFragment.newInstance(enteredCity);
             getSupportFragmentManager().beginTransaction().add(R.id.week, weekWeatherFragment).commit();
         }
     }

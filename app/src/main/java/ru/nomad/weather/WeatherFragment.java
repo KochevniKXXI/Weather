@@ -1,8 +1,9 @@
 package ru.nomad.weather;
 
+import static ru.nomad.weather.InputCityBottomSheetDialogFragment.INPUT_CITY;
+
 import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,8 +28,8 @@ import ru.nomad.weather.model.WeatherRequest;
 
 public class WeatherFragment extends Fragment {
 
-    public static final String SETTINGS = "settings";
     private static final String TAG = "WEATHER";
+    public static final String SAVED_WEATHER_OPTIONS_FILE_NAME = "saved_weather_options";
 
     private TextView city;
     private TextView temperature;
@@ -42,23 +43,96 @@ public class WeatherFragment extends Fragment {
     private LinearLayout working;
     private ThermometerView thermometer;
 
-    public static WeatherFragment newInstance(Settings settings) {
+    private Settings weatherOptions;
+    private SharedPreferences savedWeatherOptions;
+
+    public static WeatherFragment newInstance(String enteredCity) {
         WeatherFragment fragment = new WeatherFragment();
         Bundle args = new Bundle();
-        args.putSerializable(SETTINGS, settings);
+        args.putString(INPUT_CITY, enteredCity);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public Settings getSettings() {
-        return (Settings) getArguments().getSerializable(SETTINGS);
+    public String getCity() {
+        return getArguments().getString(INPUT_CITY);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_weather, container, false);
+        initView(layout);
 
+        savedWeatherOptions = getContext().getSharedPreferences(SAVED_WEATHER_OPTIONS_FILE_NAME, Context.MODE_PRIVATE);
+        loadWeatherOptions();
+
+        city.setText(weatherOptions.getCity());
+        if (weatherOptions.isCheckWind()) {
+            wind.setVisibility(View.VISIBLE);
+        } else {
+            wind.setVisibility(View.GONE);
+        }
+        if (weatherOptions.isCheckHumidity()) {
+            humidity.setVisibility(View.VISIBLE);
+        } else {
+            humidity.setVisibility(View.GONE);
+        }
+        if (weatherOptions.isCheckPressure()) {
+            pressure.setVisibility(View.VISIBLE);
+        } else {
+            pressure.setVisibility(View.GONE);
+        }
+        if (weatherOptions.isCheckWater()) {
+            water.setVisibility(View.VISIBLE);
+        } else {
+            water.setVisibility(View.GONE);
+        }
+        setHasOptionsMenu(true);
+
+        if (!weatherOptions.getCity().equals("")) {
+            try {
+                Connection connection = new Connection(weatherOptions.getCity());
+                new Thread(() -> {
+                    try {
+                        final WeatherRequest weatherRequest = connection.getWeatherRequest();
+                        connection.getHandler().post(() -> displayWeather(weatherRequest));
+                        History.getInstance().addCity(weatherOptions.getCity());
+                    } catch (IOException e) {
+                        connection.getHandler().post(() -> {
+                            working.setVisibility(View.GONE);
+                            error.setVisibility(View.VISIBLE);
+                        });
+                        ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail connection!");
+                        errorDialog.show(getParentFragmentManager(), "errorDialog");
+                        Log.e(TAG, "Fail connection!", e);
+                        e.printStackTrace();
+                    } finally {
+                        connection.closeConnection();
+                    }
+                }).start();
+            } catch (MalformedURLException e) {
+                working.setVisibility(View.GONE);
+                error.setVisibility(View.VISIBLE);
+                ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail URI!");
+                errorDialog.show(getParentFragmentManager(), "errorDialog");
+                Log.e(TAG, "Fail URI!", e);
+                e.printStackTrace();
+            }
+        }
+        return layout;
+    }
+
+    private void loadWeatherOptions() {
+        Boolean[] booleans = {
+                savedWeatherOptions.getBoolean("visibility_wind", true),
+                savedWeatherOptions.getBoolean("visibility_humidity", true),
+                savedWeatherOptions.getBoolean("visibility_pressure", true),
+                savedWeatherOptions.getBoolean("visibility_water", true)
+        };
+        weatherOptions = new Settings(getCity(), booleans[0], booleans[1], booleans[2], booleans[3]);
+    }
+
+    private void initView(View layout) {
         city = layout.findViewById(R.id.current_city);
         temperature = layout.findViewById(R.id.temperature);
         imageWeather = layout.findViewById(R.id.image_weather);
@@ -70,61 +144,6 @@ public class WeatherFragment extends Fragment {
         error = layout.findViewById(R.id.error);
         working = layout.findViewById(R.id.working);
         thermometer = layout.findViewById(R.id.thermometer);
-
-        Settings settings = getSettings();
-
-        city.setText(settings.getCity());
-        if (settings.isCheckWind()) {
-            wind.setVisibility(View.VISIBLE);
-        } else {
-            wind.setVisibility(View.GONE);
-        }
-        if (settings.isCheckHumidity()) {
-            humidity.setVisibility(View.VISIBLE);
-        } else {
-            humidity.setVisibility(View.GONE);
-        }
-        if (settings.isCheckPressure()) {
-            pressure.setVisibility(View.VISIBLE);
-        } else {
-            pressure.setVisibility(View.GONE);
-        }
-        if (settings.isCheckWater()) {
-            water.setVisibility(View.VISIBLE);
-        } else {
-            water.setVisibility(View.GONE);
-        }
-        setHasOptionsMenu(true);
-
-        try {
-            Connection connection = new Connection(settings.getCity());
-            new Thread(() -> {
-                try {
-                    final WeatherRequest weatherRequest = connection.getWeatherRequest();
-                    connection.getHandler().post(() -> displayWeather(weatherRequest));
-                    History.getInstance().addCity(settings.getCity());
-                } catch (IOException e) {
-                    connection.getHandler().post(() -> {
-                        working.setVisibility(View.GONE);
-                        error.setVisibility(View.VISIBLE);
-                    });
-                    ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail connection!");
-                    errorDialog.show(getParentFragmentManager(), "errorDialog");
-                    Log.e(TAG, "Fail connection!", e);
-                    e.printStackTrace();
-                } finally {
-                    connection.closeConnection();
-                }
-            }).start();
-        } catch (MalformedURLException e) {
-            working.setVisibility(View.GONE);
-            error.setVisibility(View.VISIBLE);
-            ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail URI!");
-            errorDialog.show(getParentFragmentManager(), "errorDialog");
-            Log.e(TAG, "Fail URI!", e);
-            e.printStackTrace();
-        }
-        return layout;
     }
 
     private void displayWeather(WeatherRequest weatherRequest) {
@@ -149,10 +168,10 @@ public class WeatherFragment extends Fragment {
         MenuItem pressure = menu.findItem(R.id.action_pressure);
         MenuItem water = menu.findItem(R.id.action_water);
 
-        wind.setChecked(getSettings().isCheckWind());
-        humidity.setChecked(getSettings().isCheckHumidity());
-        pressure.setChecked(getSettings().isCheckPressure());
-        water.setChecked(getSettings().isCheckWater());
+        wind.setChecked(weatherOptions.isCheckWind());
+        humidity.setChecked(weatherOptions.isCheckHumidity());
+        pressure.setChecked(weatherOptions.isCheckPressure());
+        water.setChecked(weatherOptions.isCheckWater());
     }
 
     @Override
@@ -160,32 +179,32 @@ public class WeatherFragment extends Fragment {
         //FIXME: Не передаются настройки при повороте экрана
         item.setChecked(!item.isChecked());
         if (item.getItemId() == R.id.action_wind) {
-            getSettings().setCheckWind(item.isChecked());
-            if (getSettings().isCheckWind()) {
+            weatherOptions.setCheckWind(item.isChecked());
+            if (weatherOptions.isCheckWind()) {
                 wind.setVisibility(View.VISIBLE);
             } else {
                 wind.setVisibility(View.GONE);
             }
             return true;
         } else if (item.getItemId() == R.id.action_humidity) {
-            getSettings().setCheckHumidity(item.isChecked());
-            if (getSettings().isCheckHumidity()) {
+            weatherOptions.setCheckHumidity(item.isChecked());
+            if (weatherOptions.isCheckHumidity()) {
                 humidity.setVisibility(View.VISIBLE);
             } else {
                 humidity.setVisibility(View.GONE);
             }
             return true;
         } else if (item.getItemId() == R.id.action_pressure) {
-            getSettings().setCheckPressure(item.isChecked());
-            if (getSettings().isCheckPressure()) {
+            weatherOptions.setCheckPressure(item.isChecked());
+            if (weatherOptions.isCheckPressure()) {
                 pressure.setVisibility(View.VISIBLE);
             } else {
                 pressure.setVisibility(View.GONE);
             }
             return true;
         } else if (item.getItemId() == R.id.action_water) {
-            getSettings().setCheckWater(item.isChecked());
-            if (getSettings().isCheckWater()) {
+            weatherOptions.setCheckWater(item.isChecked());
+            if (weatherOptions.isCheckWater()) {
                 water.setVisibility(View.VISIBLE);
             } else {
                 water.setVisibility(View.GONE);
@@ -193,5 +212,22 @@ public class WeatherFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        saveWeatherOptions();
+    }
+
+    private void saveWeatherOptions() {
+        SharedPreferences.Editor editor = savedWeatherOptions.edit();
+        editor.putString("selected_city", weatherOptions.getCity());
+        editor.putBoolean("visibility_wind", weatherOptions.isCheckWind());
+        editor.putBoolean("visibility_humidity", weatherOptions.isCheckHumidity());
+        editor.putBoolean("visibility_pressure", weatherOptions.isCheckPressure());
+        editor.putBoolean("visibility_water", weatherOptions.isCheckWater());
+        editor.apply();
     }
 }

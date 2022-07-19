@@ -1,6 +1,6 @@
 package ru.nomad.weather;
 
-import static ru.nomad.weather.WeatherFragment.SETTINGS;
+import static ru.nomad.weather.InputCityBottomSheetDialogFragment.INPUT_CITY;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,17 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class WeekWeatherFragment extends Fragment {
 
-    public static WeekWeatherFragment newInstance(Settings settings) {
+    public static WeekWeatherFragment newInstance(String enteredCity) {
         WeekWeatherFragment fragment = new WeekWeatherFragment();
         Bundle args = new Bundle();
-        args.putSerializable(SETTINGS, settings);
+        args.putString(INPUT_CITY, enteredCity);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fWeekWeather = inflater.inflate(R.layout.fragment_week_weather, container, false);
         RecyclerView weekWeather = fWeekWeather.findViewById(R.id.week_weather);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
