@@ -23,7 +23,9 @@ import androidx.fragment.app.Fragment;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import ru.nomad.weather.model.Connection;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.nomad.weather.model.WeatherRequest;
 
 public class WeatherFragment extends Fragment {
@@ -89,35 +91,27 @@ public class WeatherFragment extends Fragment {
         }
         setHasOptionsMenu(true);
 
-        if (!weatherOptions.getCity().equals("")) {
-            try {
-                Connection connection = new Connection(weatherOptions.getCity());
-                new Thread(() -> {
-                    try {
-                        final WeatherRequest weatherRequest = connection.getWeatherRequest();
-                        connection.getHandler().post(() -> displayWeather(weatherRequest));
-                        History.getInstance().addCity(weatherOptions.getCity());
-                    } catch (IOException e) {
-                        connection.getHandler().post(() -> {
+        if (!getCity().equals("")) {
+            Connection.getInstance().getOpenWeather().loadWeather(getCity() + ", RU", BuildConfig.WEATHER_API_KEY, "metric", "ru")
+                    .enqueue(new Callback<WeatherRequest>() {
+                        @Override
+                        public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
+                            if (response.body() != null) {
+                                History.getInstance().addCity(getCity());
+                                displayWeather(response.body());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<WeatherRequest> call, Throwable t) {
                             working.setVisibility(View.GONE);
                             error.setVisibility(View.VISIBLE);
-                        });
-                        ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail connection!");
-                        errorDialog.show(getParentFragmentManager(), "errorDialog");
-                        Log.e(TAG, "Fail connection!", e);
-                        e.printStackTrace();
-                    } finally {
-                        connection.closeConnection();
-                    }
-                }).start();
-            } catch (MalformedURLException e) {
-                working.setVisibility(View.GONE);
-                error.setVisibility(View.VISIBLE);
-                ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail URI!");
-                errorDialog.show(getParentFragmentManager(), "errorDialog");
-                Log.e(TAG, "Fail URI!", e);
-                e.printStackTrace();
-            }
+                            ErrorDialogFragment errorDialog = new ErrorDialogFragment("Fail Connection!");
+                            errorDialog.show(getParentFragmentManager(), "errorDialog");
+                            Log.e(TAG, "Fail connection!", t);
+                            t.printStackTrace();
+                        }
+                    });
         }
         return layout;
     }

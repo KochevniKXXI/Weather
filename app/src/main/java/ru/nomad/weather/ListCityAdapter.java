@@ -2,6 +2,7 @@ package ru.nomad.weather;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +13,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
+import com.squareup.picasso.Picasso;
+
 import java.util.LinkedHashSet;
 
-import ru.nomad.weather.model.Connection;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.nomad.weather.model.WeatherRequest;
 
 public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -47,35 +50,22 @@ public class ListCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ((CardCity) holder).city.setText(cities[getItemCount() - 1 - position]);
+        Connection.getInstance().getOpenWeather().loadWeather(((CardCity) holder).city.getText().toString() + ", RU", BuildConfig.WEATHER_API_KEY,"metric", "ru")
+                .enqueue(new Callback<WeatherRequest>() {
+                    @Override
+                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
+                        if (response.body() != null) {
+                            ((CardCity) holder).cardHistory.setBackgroundResource(resources.getIdentifier(String.format("bc_%sd", response.body().getWeather()[0].getIcon().substring(0, 2)), "drawable", context.getPackageName()));
+                            ((CardCity) holder).temperature.setText(resources.getString(R.string.temperature, Math.round(response.body().getMain().getTemp())));
+                            ((CardCity) holder).imageWeather.setImageResource(resources.getIdentifier(String.format("ic_%s", response.body().getWeather()[0].getIcon()), "drawable", context.getPackageName()));
+                        }
+                    }
 
-        try {
-            Connection connection = new Connection(((CardCity) holder).city.getText().toString());
+                    @Override
+                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
 
-            new Thread(() -> {
-                try {
-                    final WeatherRequest weatherRequest = connection.getWeatherRequest();
-                    connection.getHandler().post(() -> {
-                        ((CardCity) holder).cardHistory.setBackgroundResource(resources.getIdentifier(String.format("bc_%sd", weatherRequest.getWeather()[0].getIcon().substring(0, 2)), "drawable", context.getPackageName()));
-                        ((CardCity) holder).temperature.setText(resources.getString(R.string.temperature, Math.round(weatherRequest.getMain().getTemp())));
-                        ((CardCity) holder).imageWeather.setImageResource(resources.getIdentifier(String.format("ic_%s", weatherRequest.getWeather()[0].getIcon()), "drawable", context.getPackageName()));
-                    });
-                } catch (IOException e) {
-//                    connection.getHandler().post(() -> {
-//                        working.setVisibility(View.GONE);
-//                        error.setVisibility(View.VISIBLE);
-//                    });
-//                    Log.e(TAG, "Fail connection!", e);
-                    e.printStackTrace();
-                } finally {
-                    connection.closeConnection();
-                }
-            }).start();
-        } catch (MalformedURLException e) {
-//            working.setVisibility(View.GONE);
-//            error.setVisibility(View.VISIBLE);
-//            Log.e(TAG, "Fail URI!", e);
-            e.printStackTrace();
-        }
+                    }
+                });
 
         holder.itemView.setOnClickListener(v -> onClickListener.onCardClick(((CardCity) holder).city.getText().toString(), holder.getAdapterPosition()));
     }

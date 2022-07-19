@@ -3,7 +3,7 @@ package ru.nomad.weather;
 import java.util.LinkedHashSet;
 
 public class History {
-    private LinkedHashSet<String> listCity;
+    private final LinkedHashSet<String> listCity;
     private static History instance;
 
     private History() {
@@ -27,9 +27,5 @@ public class History {
 
     public LinkedHashSet<String> getListCity() {
         return listCity;
-    }
-
-    public void setListCity(LinkedHashSet<String> listCity) {
-        this.listCity = listCity;
     }
 }
