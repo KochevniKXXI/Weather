@@ -1,10 +1,16 @@
 package ru.nomad.weather;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -30,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SensorManager sensorManager;
     private Sensor sensorTemperature;
     private Sensor sensorHumidity;
+    //
+    private BatteryReceiver batteryReceiver;
     // "Слушатели" датчиков
     private final SensorEventListener temperatureListener = new SensorEventListener() {
         @Override
@@ -60,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initNotificationChannel();
+
         Toolbar toolbar = initToolbar();
         initDrawer(toolbar);
         initFab();
@@ -68,6 +78,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initSensors();
         initViews();
+    }
+
+    // инициализация канала нотификаций
+    private void initNotificationChannel() {
+        NotificationManager notificationManager = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+        int importance = NotificationManager.IMPORTANCE_LOW;
+        NotificationChannel channel = new NotificationChannel("2", "name",
+                importance);
+        notificationManager.createNotificationChannel(channel);
     }
 
     private Toolbar initToolbar() {
@@ -122,6 +142,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             relativeHumidity.setText("13%");
         }
+        batteryReceiver = new BatteryReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_BATTERY_LOW);
+        intentFilter.addAction(ConnectivityManager.EXTRA_NO_CONNECTIVITY);
+        registerReceiver(batteryReceiver, intentFilter);
     }
 
     @Override
@@ -129,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onPause();
         sensorManager.unregisterListener(temperatureListener, sensorTemperature);
         sensorManager.unregisterListener(humidityListener, sensorTemperature);
+        unregisterReceiver(batteryReceiver);
     }
 
     @Override
